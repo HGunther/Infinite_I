@@ -31,35 +31,82 @@
     </style>
   </head>
   <body>
-    <div id="message">
-      <h2>Welcome</h2>
-      <h1>Firebase Hosting Setup Complete</h1>
-      <p>You're seeing this because you've successfully setup Firebase Hosting. Now it's time to go build something extraordinary!</p>
-      <a target="_blank" href="https://firebase.google.com/docs/hosting/">Open Hosting Documentation</a>
-    </div>
-    <p id="load">Firebase SDK Loading&hellip;</p>
-
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
-        // // The Firebase SDK is initialized and available here!
-        //
-        // firebase.auth().onAuthStateChanged(user => { });
-        // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
-        // firebase.messaging().requestPermission().then(() => { });
-        // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
-        //
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
-
-        try {
-          let app = firebase.app();
-          let features = ['auth', 'database', 'messaging', 'storage'].filter(feature => typeof app[feature] === 'function');
-          document.getElementById('load').innerHTML = `Firebase SDK loaded with ${features.join(', ')}`;
-        } catch (e) {
-          console.error(e);
-          document.getElementById('load').innerHTML = 'Error loading the Firebase SDK, check the console.';
+    <center>
+      <h1>The Infinite I</h1>
+    </center>
+  
+    <center>
+      <svg id="fractalImage" width="500" height="500">
+      </svg>
+    </center>
+      
+      <script type="text/javascript">
+      function lengthDecay(len){
+        return len * (1/ Math.sqrt(2));
+      }
+  
+      function thicknessDecay(thickness){
+        return thickness *  (1/ Math.sqrt(2));
+      }
+  
+      function drawLine(startPos, endPos, parent, thickness) {
+        var newLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        newLine.setAttribute("x1", startPos[0])
+        newLine.setAttribute("y1", startPos[1])
+        newLine.setAttribute("x2", endPos[0])
+        newLine.setAttribute("y2", endPos[1])
+        newLine.setAttribute("stroke", "black")
+        newLine.setAttribute("style", "stroke-width:" + thickness)
+        parent.appendChild(newLine);
+      }
+  
+      function draw_fractal_iteration(startPos, len, thickness, direction, depth) {
+        if (depth <= 0){
+          return;
         }
-      });
+  
+        var parent = document.getElementById("fractalImage");
+        var newLen = lengthDecay(len);
+        var newThickness = thicknessDecay(thickness);
+        var newDepth = depth - 1;
+  
+        switch (direction) {
+          case "up":
+            var endPos = [startPos[0], startPos[1] + len];
+            drawLine(startPos, endPos, parent, thickness);
+            draw_fractal_iteration(endPos, newLen, newThickness, "left", newDepth);
+            draw_fractal_iteration(endPos, newLen, newThickness, "right", newDepth);
+            break;
+          case "down":
+          var endPos = [startPos[0], startPos[1] - len];
+            drawLine(startPos, endPos, parent, thickness);
+            draw_fractal_iteration(endPos, newLen, newThickness, "left", newDepth);
+            draw_fractal_iteration(endPos, newLen, newThickness, "right", newDepth);
+            break;
+          case "left":
+          var endPos = [startPos[0] - len, startPos[1]];
+            drawLine(startPos, endPos, parent, thickness);
+            draw_fractal_iteration(endPos, newLen, newThickness, "up", newDepth);
+            draw_fractal_iteration(endPos, newLen, newThickness, "down", newDepth);
+            break;
+          case "right":
+          var endPos = [startPos[0] + len, startPos[1]];
+            drawLine(startPos, endPos, parent, thickness);
+            draw_fractal_iteration(endPos, newLen, newThickness, "up", newDepth);
+            draw_fractal_iteration(endPos, newLen, newThickness, "down", newDepth);
+            break;
+        }
+        return;
+      }
+  
+      function start_drawing_fractal(centerPos, size){
+        var recursionDepth = 15;
+        draw_fractal_iteration(centerPos, size, 10, "up", recursionDepth);
+        draw_fractal_iteration(centerPos, size, 10, "down", recursionDepth);
+      }
+  
+      start_drawing_fractal([250, 250], 500/4);
+  
     </script>
   </body>
 </html>
